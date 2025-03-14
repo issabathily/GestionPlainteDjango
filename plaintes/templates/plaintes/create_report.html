@@ -1,0 +1,76 @@
+{% extends 'plaintes/base.html' %}
+{% load static %}
+{% block content %}
+<div  class="container mt-4 max-w-md mx-auto">
+    <div class="bg-gray-900 p-4 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold text-white mb-3 text-center">Nouvelle plainte</h2>
+        <form style="padding: 10px" method="post" enctype="multipart/form-data" class="space-y-3">
+            {% csrf_token %}
+            <div class="space-y-3">
+                {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-xs font-medium text-gray-400 mb-1">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <p class="text-red-400 text-xs mt-1">{{ field.errors|join:", " }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary w-full py-2 text-sm font-medium rounded-md hover:bg-blue-700 transition duration-150">
+                Envoyer
+            </button>
+        </form>
+    </div>
+
+    <style>
+        body {
+
+            font-family: 'Helvetica', sans-serif;
+            color: #e4e6eb;
+        }
+
+        .btn-primary {
+            background-color: #2374e1;
+            border-color: #2374e1;
+        }
+
+        .btn-primary:hover {
+            background-color: #1b5bbf;
+            border-color: #1b5bbf;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #3a3b3c;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #242526;
+            color: #e4e6eb;
+            transition: border-color 0.2s ease-in-out;
+        }
+
+        textarea {
+            max-height: 50px;
+            resize: vertical;
+        }
+
+        input[type="text"]:focus,
+        input[type="file"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2374e1;
+            box-shadow: 0 0 0 2px rgba(35, 116, 225, 0.2);
+        }
+
+        .shadow-md {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</div>
+{% endblock %}

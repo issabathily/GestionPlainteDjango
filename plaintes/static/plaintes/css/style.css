@@ -1,0 +1,32 @@
+body {
+    background-color: #f0f2f5;
+    font-family: 'Helvetica', sans-serif;
+}
+
+.navbar {
+    border-bottom: 1px solid #ddd;
+}
+
+.sidebar {
+    position: sticky;
+    top: 70px;
+    height: calc(100vh - 70px);
+}
+
+.card {
+    transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background-color: #1877f2;
+    border-color: #1877f2;
+}
+
+.btn-primary:hover {
+    background-color: #165dc0;
+    border-color: #165dc0;
+}

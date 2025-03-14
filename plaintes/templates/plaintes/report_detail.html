@@ -1,0 +1,21 @@
+
+{% extends 'plaintes/base.html' %}
+{% block content %}
+<div class="container mt-5 max-w-2xl mx-auto">
+    <h2 class="text-2xl font-semibold">Détails de la plainte</h2>
+    <div class="card bg-white shadow-sm rounded-lg">
+        <div class="card-body">
+            <p>{{ report.description }}</p>
+            <p><strong>Lieu:</strong> {{ report.location }}</p>
+            <p><strong>Statut:</strong> <span class="badge bg-{% if report.status == 'resolved' %}success{% else %}warning{% endif %}">{{ report.status }}</span></p>
+            {% if report.media %}
+            <img src="{{ report.media.url }}" class="img-fluid rounded mt-2" alt="Media">
+            {% endif %}
+            <h5 class="mt-4">Commentaires</h5>
+            {% for comment in report.comments.all %}
+            <p><strong>{{ comment.user }}</strong>: {{ comment.content }} <small>{{ comment.created_at }}</small></p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
