@@ -117,13 +117,24 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+# settings.py
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Permet à tous les utilisateurs de se connecter
+]
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
+# settings.py
+
 AUTH_USER_MODEL = 'plaintes.User'
+
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Pour tester, remplacez par SMTP en prod
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+# settings.py
+
+LOGIN_URL = 'login'  # Cela pointe vers la vue de connexion définie dans vos URLs
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

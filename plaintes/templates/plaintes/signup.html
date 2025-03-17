@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container mt-8 max-w-lg mx-auto">
     <div class="bg-white p-8 rounded-lg shadow-lg">
-        <h2 class="text-3xl font-semibold text-gray-800 mb-6 text-center">Connexion</h2>
+        <h2 class="text-3xl font-semibold text-gray-800 mb-6 text-center">Inscription</h2>
         <form method="post" class="space-y-6">
             {% csrf_token %}
             <div class="space-y-4">
@@ -23,11 +23,11 @@
                 {% endfor %}
             </div>
             <button type="submit" class="btn btn-primary w-full py-3 text-lg font-medium rounded-md hover:bg-blue-700 transition duration-200">
-                Se connecter
+                S'inscrire
             </button>
         </form>
         <p class="mt-4 text-center text-gray-600 text-sm">
-            Pas encore de compte ? <a href="{% url 'signup' %}" class="text-blue-600 hover:underline">Inscrivez-vous</a>
+            Vous avez déjà un compte ? <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Connectez-vous</a>
         </p>
     </div>
 </div>

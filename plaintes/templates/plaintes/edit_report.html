@@ -1,0 +1,98 @@
+{% extends 'plaintes/base.html' %}
+{% load form_tags %}
+
+
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center text-blue-600 font-bold mb-4">Modifier le Rapport #{{ report.id }}</h1>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-blue-600 text-white">
+            <h3 class="card-title">Modifier les Détails du Rapport</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Description Field -->
+                <div class="form-group mb-3">
+                    <label for="id_description" class="font-weight-bold">Description</label>
+                    {{ form.description|add_class:"form-control" }}
+                </div>
+
+                <!-- Status Field -->
+                <div class="form-group mb-3">
+                    <label for="id_status" class="font-weight-bold">Statut</label>
+                    {{ form.status|add_class:"form-control" }}
+                </div>
+
+                <!-- Location Field -->
+                <div class="form-group mb-3">
+                    <label for="id_location" class="font-weight-bold">Localisation</label>
+                    {{ form.location|add_class:"form-control" }}
+                </div>
+
+                <!-- Media Field -->
+                <div class="form-group mb-3">
+                    <label for="id_media" class="font-weight-bold">Média</label>
+                    {{ form.media|add_class:"form-control-file" }}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-group mb-3">
+                    <button type="submit" class="btn btn-primary btn-block">Mettre à jour</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+    <style>
+    /* Style pour la carte de formulaire */
+.card {
+    margin-top: 50px;
+}
+
+.card-header {
+    background-color: #007bff;
+    color: white;
+}
+
+.card-body {
+    background-color: #f8f9fa;
+}
+
+/* Boutons */
+.btn-block {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+/* Champs du formulaire */
+.form-group label {
+    font-weight: bold;
+}
+
+.form-control {
+    border-radius: 5px;
+}
+
+.form-control-file {
+    border-radius: 5px;
+}
+
+    </style>
+{% endblock %}

@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
+
 class User(AbstractUser):
     ROLES = (
         ('citizen', 'Citoyen'),
@@ -14,6 +16,13 @@ class User(AbstractUser):
         return self.username
 
 class Report(models.Model):
+    PROBLEM_TYPES = (
+        ('waste', 'Déchets'),
+        ('road', 'Routes endommagées'),
+        ('water', 'Coupures d\'eau'),
+        ('electricity', 'Problèmes électriques'),
+        ('other', 'Autres'),
+    )
     STATUS_CHOICES = (
         ('received', 'Reçu'),
         ('in_progress', 'En cours'),
@@ -22,6 +31,7 @@ class Report(models.Model):
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField()
+    problem_type = models.CharField(max_length=20, choices=PROBLEM_TYPES, default='other')
     location = models.CharField(max_length=255)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='received')
     created_at = models.DateTimeField(auto_now_add=True)

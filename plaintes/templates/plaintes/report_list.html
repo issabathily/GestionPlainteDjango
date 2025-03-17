@@ -1,60 +1,230 @@
 {% extends 'plaintes/base.html' %}
 {% load static %}
 
+{% block title %}
+    {% if request.GET.admin %}Liste des rapports - Administration{% else %}Mes rapports{% endif %}
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid mt-8">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3 sidebar bg-white p-6 rounded-lg shadow-md sticky top-20 h-fit">
-            <h4 class="text-xl font-semibold text-gray-800 mb-4">Menu</h4>
-            <ul class="list-group space-y-3">
-                <li class="list-group-item flex items-center p-3 rounded-md hover:bg-gray-100 transition duration-200">
-                    <i class="fas fa-tachometer-alt mr-3 text-blue-600"></i>
-                    <a href="{% url 'dashboard' %}" class="text-gray-700 hover:text-blue-600">Tableau de bord</a>
-                </li>
-                <li class="list-group-item flex items-center p-3 rounded-md hover:bg-gray-100 transition duration-200">
-                    <i class="fas fa-plus-circle mr-3 text-blue-600"></i>
-                    <a href="{% url 'create_report' %}" class="text-gray-700 hover:text-blue-600">Nouveau signalement</a>
-                </li>
-                <li class="list-group-item flex items-center p-3 rounded-md hover:bg-gray-100 transition duration-200">
-                    <i class="fas fa-bell mr-3 text-blue-600"></i>
-                    <a href="{% url 'notification_list' %}" class="text-gray-700 hover:text-blue-600">Notifications</a>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Liste des plaintes -->
-        <div class="col-md-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Plaintes</h2>
-            {% for report in reports %}
-            <div class="card mb-6 bg-white shadow-md rounded-lg border border-gray-100">
-                <div class="card-body p-6">
-                    <p class="text-gray-800 text-lg">{{ report.description }}</p>
-                    <div class="flex justify-between items-center mt-3">
-                        <small class="text-gray-500">{{ report.location }} - {{ report.created_at|date:"d M Y, H:i" }}</small>
-                        <span class="badge bg-{% if report.status == 'resolved' %}success{% elif report.status == 'in_progress' %}warning{% else %}secondary{% endif %} px-3 py-1 rounded-full">
-                            {{ report.status }}
-                        </span>
-                    </div>
-                    {% if report.media %}
-                    <img src="{{ report.media.url }}" class="img-fluid rounded mt-4 max-h-96 w-full object-cover" alt="Media">
+<div class="container py-4">
+    <!-- En-tête et filtres -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3">
+                    {% if request.GET.admin %}
+                        Liste des rapports
+                    {% else %}
+                        Mes rapports
                     {% endif %}
-                    <a href="{% url 'report_detail' report.id %}" class="btn btn-link text-blue-600 mt-4 inline-block">Voir détails</a>
-                </div>
+                </h1>
+                <a href="{% url 'create_report' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nouveau rapport
+                </a>
             </div>
-            {% empty %}
-            <p class="text-gray-600">Aucune plainte pour le moment.</p>
-            {% endfor %}
-        </div>
 
-        <!-- Statistiques rapides -->
-        <div class="col-md-3 bg-white p-6 rounded-lg shadow-md sticky top-20 h-fit">
-            <h4 class="text-xl font-semibold text-gray-800 mb-4">Statistiques rapides</h4>
-            <div class="space-y-3">
-                <p class="text-gray-700"><i class="fas fa-list mr-2 text-blue-600"></i> Total: {{ reports.count }}</p>
-                <p class="text-gray-700"><i class="fas fa-check-circle mr-2 text-green-600"></i> Résolues: </p>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        {% if request.GET.admin %}<input type="hidden" name="admin" value="true">{% endif %}
+                        
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" name="search" class="form-control" placeholder="Rechercher..." value="{{ search_query }}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <select name="status" class="form-select">
+                                <option value="">Tous les statuts</option>
+                                {% for status, label in status_choices %}
+                                    <option value="{{ status }}" {% if status == status_filter %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <select name="type" class="form-select">
+                                <option value="">Tous les types</option>
+                                {% for type, label in type_choices %}
+                                    <option value="{{ type }}" {% if type == type_filter %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <select name="sort" class="form-select">
+                                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Plus récents</option>
+                                <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>Plus anciens</option>
+                                <option value="status" {% if sort == 'status' %}selected{% endif %}>Par statut</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-funnel"></i> Filtrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Liste des rapports -->
+    <div class="row">
+        {% if reports %}
+            {% for report in reports %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        {% if report.media %}
+                            <img src="{{ report.media.url }}" class="card-img-top" alt="Media" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge bg-secondary">{{ report.get_problem_type_display }}</span>
+                                <span class="badge {% if report.status == 'received' %}bg-info
+                                    {% elif report.status == 'in_progress' %}bg-warning
+                                    {% elif report.status == 'resolved' %}bg-success
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ report.get_status_display }}
+                                </span>
+                            </div>
+
+                            <h5 class="card-title text-truncate">{{ report.description|truncatechars:50 }}</h5>
+                            
+                            <p class="card-text small text-muted mb-3">
+                                <i class="bi bi-geo-alt"></i> {{ report.location }}<br>
+                                <i class="bi bi-clock"></i> {{ report.created_at|date:"d/m/Y H:i" }}
+                            </p>
+
+                            {% if request.GET.admin %}
+                                <p class="card-text small mb-3">
+                                    <i class="bi bi-person"></i> {{ report.user.username }}
+                                </p>
+                            {% endif %}
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{% url 'report_detail' report.id %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye"></i> Voir détails
+                                </a>
+                                
+                                {% if request.GET.admin or report.user == user %}
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            {% if request.GET.admin %}
+                                                <li>
+                                                    <a class="dropdown-item" href="#" onclick="updateStatus('{{ report.id }}', 'in_progress')">
+                                                        <i class="bi bi-play-circle"></i> Marquer en cours
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#" onclick="updateStatus('{{ report.id }}', 'resolved')">
+                                                        <i class="bi bi-check-circle"></i> Marquer résolu
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                            {% endif %}
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="{% url 'delete_report' report.id %}">
+                                                    <i class="bi bi-trash"></i> Supprimer
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <!-- Pagination -->
+            {% if reports.has_other_pages %}
+                <div class="col-12">
+                    <nav aria-label="Navigation des pages">
+                        <ul class="pagination justify-content-center">
+                            {% if reports.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ reports.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.admin %}&admin=true{% endif %}">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% for num in reports.paginator.page_range %}
+                                {% if reports.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > reports.number|add:'-3' and num < reports.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.admin %}&admin=true{% endif %}">
+                                            {{ num }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if reports.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ reports.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.admin %}&admin=true{% endif %}">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="col-12 text-center py-5">
+                <img src="{% static 'plaintes/img/empty.svg' %}" alt="Aucun rapport" class="img-fluid mb-4" style="max-width: 300px;">
+                <h3>Aucun rapport trouvé</h3>
+                <p class="text-muted mb-4">
+                    {% if search_query or status_filter or type_filter %}
+                        Aucun rapport ne correspond à vos critères de recherche.
+                    {% else %}
+                        Vous n'avez pas encore créé de rapport.
+                    {% endif %}
+                </p>
+                <a href="{% url 'create_report' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Créer un rapport
+                </a>
+            </div>
+        {% endif %}
+    </div>
 </div>
+
+{% block extra_js %}
+<script>
+function updateStatus(reportId, status) {
+    if (confirm('Voulez-vous vraiment changer le statut de ce rapport ?')) {
+        fetch(`/reports/${reportId}/update-status/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({ status: status })
+        }).then(response => {
+            if (response.ok) {
+                window.location.reload();
+            }
+        });
+    }
+}
+</script>
+{% endblock %}
 {% endblock %}

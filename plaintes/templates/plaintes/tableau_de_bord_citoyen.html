@@ -1,0 +1,111 @@
+{% extends 'plaintes/base.html' %}
+{% load static %}
+
+{% block title %}Mon Tableau de Bord{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-5 fw-bold" style="color: #0d6efd;">Mon Tableau de Bord</h2>
+
+    <!-- Statistiques simples -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 15px; transition: transform 0.2s;">
+                <div class="card-body p-4">
+                    <h6 class="text-muted mb-2" style="font-size: 0.95rem;">Mes Rapports</h6>
+                    <h3 class="mb-0 fw-bold" style="color: #0d6efd;">{{ total_rapports }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 15px; transition: transform 0.2s;">
+                <div class="card-body p-4">
+                    <h6 class="text-muted mb-2" style="font-size: 0.95rem;">Rapports Résolus</h6>
+                    <h3 class="mb-0 fw-bold" style="color: #198754;">{{ rapports_resolus }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 15px; transition: transform 0.2s;">
+                <div class="card-body p-4">
+                    <h6 class="text-muted mb-2" style="font-size: 0.95rem;">Rapports en Attente</h6>
+                    <h3 class="mb-0 fw-bold" style="color: #ffc107;">{{ rapports_en_attente }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des rapports -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="fw-semibold mb-0" style="color: #0d6efd;">Mes derniers rapports</h3>
+                        <a href="{% url 'create_report' %}" class="btn btn-primary" style="border-radius: 8px; padding: 8px 20px;">
+                            <i class="fas fa-plus me-2"></i>Nouveau Rapport
+                        </a>
+                    </div>
+
+                    {% if rapports_recents %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr class="text-muted" style="font-size: 0.9rem;">
+                                        <th>ID</th>
+                                        <th>Description</th>
+                                        <th>Type</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for rapport in rapports_recents %}
+                                    <tr>
+                                        <td class="fw-medium">#{{ rapport.id }}</td>
+                                        <td>{{ rapport.description|truncatechars:50 }}</td>
+                                        <td>{{ rapport.problem_type }}</td>
+                                        <td>
+                                            <span class="badge rounded-pill py-2 px-3
+                                                {% if rapport.status == 'resolved' %}bg-success
+                                                {% elif rapport.status == 'in_progress' %}bg-warning
+                                                {% elif rapport.status == 'rejected' %}bg-danger
+                                                {% else %}bg-primary{% endif %}"
+                                                style="font-size: 0.85rem;">
+                                                {{ rapport.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'report_detail' rapport.id %}"
+                                               class="btn btn-sm btn-outline-primary"
+                                               style="border-radius: 8px;">Voir détails</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3">
+                            <a href="{% url 'report_list' %}"
+                               class="btn btn-outline-secondary"
+                               style="border-radius: 8px;">Voir tous mes rapports</a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info" style="border-radius: 10px;">
+                            <i class="fas fa-info-circle me-2"></i>Vous n'avez pas encore créé de rapport.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}

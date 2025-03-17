@@ -1,0 +1,71 @@
+{% extends 'plaintes/base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="text-center text-blue-600 font-bold mb-4">Tableau de bord Administrateur</h1>
+
+        <!-- Liste des Rapports -->
+        <div class="card shadow-sm">
+          <div class="card-header bg-blue-600 text-white">
+            <h3 class="card-title">Liste des Rapports</h3>
+          </div>
+          <div class="card-body">
+            <table class="table table-striped table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Date de création</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for report in reports %}
+                  <tr>
+                    <td>{{ report.id }}</td>
+                    <td>{{ report.description|truncatewords:10 }}</td> <!-- Limite la description -->
+                    <td>
+                      {% if report.status == 'received' %}
+                        <span class="badge bg-warning text-dark">Reçu</span>
+                      {% elif report.status == 'in_progress' %}
+                        <span class="badge bg-info text-white">En cours</span>
+                      {% elif report.status == 'resolved' %}
+                        <span class="badge bg-success text-white">Résolu</span>
+                      {% else %}
+                        <span class="badge bg-danger text-white">Rejeté</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ report.created_at }}</td>
+                    <td>
+                      <a href="{% url 'edit_report' report.id %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-pencil-square"></i> Modifier
+                      </a>
+                      <a href="{% url 'delete_report' report.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce rapport ?');">
+                        <i class="bi bi-trash"></i> Supprimer
+                      </a>
+                    </td>
+                  <td>
+    {% if report.status == 'received' %}
+        <span class="badge bg-warning text-dark">Reçu</span>
+    {% elif report.status == 'in_progress' %}
+        <span class="badge bg-info text-white">En cours</span>
+    {% elif report.status == 'resolved' %}
+        <span class="badge bg-success text-white">Résolu</span>
+    {% else %}
+        <span class="badge bg-danger text-white">Rejeté</span>
+    {% endif %}
+</td>
+
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

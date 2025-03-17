@@ -1,0 +1,168 @@
+{% extends 'plaintes/base.html' %}
+{% load static %}
+
+{% block title %}Tableau de Bord - Administration{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Tableau de Bord Administrateur</h2>
+        <a href="{% url 'report_list' %}" class="btn btn-primary">
+            <i class="bi bi-list"></i> Tous les rapports
+        </a>
+    </div>
+    
+    <!-- Statistiques -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="p-3 bg-light rounded">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted mb-1">Total Rapports</h6>
+                        <h3 class="mb-0">{{ total_rapports }}</h3>
+                    </div>
+                    <div class="text-primary">
+                        <i class="bi bi-file-text fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 bg-light rounded">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted mb-1">Résolus</h6>
+                        <h3 class="mb-0">{{ rapports_resolus }}</h3>
+                    </div>
+                    <div class="text-success">
+                        <i class="bi bi-check-circle fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 bg-light rounded">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted mb-1">En Attente</h6>
+                        <h3 class="mb-0">{{ rapports_en_attente }}</h3>
+                    </div>
+                    <div class="text-warning">
+                        <i class="bi bi-clock fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 bg-light rounded">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-muted mb-1">Utilisateurs</h6>
+                        <h3 class="mb-0">{{ total_utilisateurs }}</h3>
+                    </div>
+                    <div class="text-info">
+                        <i class="bi bi-people fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des rapports -->
+    <div class="bg-white p-4 rounded shadow-sm">
+        <h4 class="mb-4">Derniers rapports</h4>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Description</th>
+                        <th>Utilisateur</th>
+                        <th>Statut</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rapport in rapports_recents %}
+                    <tr>
+                        <td class="fw-bold">#{{ rapport.id }}</td>
+                        <td>{{ rapport.description|truncatechars:50 }}</td>
+                        <td>{{ rapport.user.username }}</td>
+                        <td>
+                            <span class="badge {% if rapport.status == 'resolved' %}bg-success{% elif rapport.status == 'in_progress' %}bg-warning{% elif rapport.status == 'rejected' %}bg-danger{% else %}bg-primary{% endif %}">
+                                {{ rapport.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group">
+                                <select class="form-select form-select-sm me-2" style="width: auto;" onchange="updateStatus({{ rapport.id }}, this.value)">
+                                    <option value="">Changer statut</option>
+                                    <option value="received">Reçu</option>
+                                    <option value="in_progress">En cours</option>
+                                    <option value="resolved">Résolu</option>
+                                    <option value="rejected">Rejeté</option>
+                                </select>
+                                <a href="{% url 'report_detail' rapport.id %}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function updateStatus(reportId, status) {
+    if (!status) return;
+    if (!confirm('Voulez-vous vraiment changer le statut de ce rapport ?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/reports/${reportId}/update-status/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ status: status })
+        });
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la mise à jour du statut');
+        }
+
+        const data = await response.json();
+        if (data.status === 'success') {
+            location.reload();
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue lors de la mise à jour du statut');
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

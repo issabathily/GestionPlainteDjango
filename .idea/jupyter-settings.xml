@@ -11,6 +11,13 @@
             </JupyterConnectionParameters>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../../../Analyse de donnes/pandas/.idea/pandas.iml">
+          <value>
+            <JupyterConnectionParameters>
+              <option name="managed" value="true" />
+            </JupyterConnectionParameters>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../../../../isep diamniadio promos 5/Analyse do donnes/Analyse de donnes/pandas/.idea/pandas.iml">
           <value>
             <JupyterConnectionParameters>

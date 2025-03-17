@@ -1,0 +1,159 @@
+{% extends 'plaintes/base.html' %}
+{% load static %}
+
+{% block title %}Accueil - Gestion des Plaintes{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="row align-items-center py-5">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold text-primary mb-4">Signalement des Problèmes Urbains</h1>
+            <p class="lead mb-4">
+                Participez à l'amélioration de votre ville en signalant les problèmes urbains. 
+                Ensemble, construisons une ville plus propre, plus sûre et plus agréable à vivre.
+            </p>
+            {% if not user.is_authenticated %}
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <a href="{% url 'signup' %}" class="btn btn-primary btn-lg px-4 me-md-2">
+                        <i class="bi bi-person-plus"></i> Créer un compte
+                    </a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg px-4">
+                        <i class="bi bi-box-arrow-in-right"></i> Se connecter
+                    </a>
+                </div>
+            {% else %}
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <a href="{% url 'create_report' %}" class="btn btn-primary btn-lg px-4 me-md-2">
+                        <i class="bi bi-plus-circle"></i> Signaler un problème
+                    </a>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-primary btn-lg px-4">
+                        <i class="bi bi-speedometer2"></i> Mon tableau de bord
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-lg-6">
+            <img width="70%" src="{% static 'plaintes/images/5780002.jpg' %}" alt="Illustration" class="img-fluid">
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row py-5">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-5 fw-bold">Comment ça marche ?</h2>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-primary bg-gradient text-white mb-3 p-3 rounded-circle mx-auto" style="width: 64px; height: 64px;">
+                        <i class="bi bi-pencil-square fs-3"></i>
+                    </div>
+                    <h3 class="fs-4 fw-bold">1. Signalez</h3>
+                    <p class="text-muted">
+                        Décrivez le problème, ajoutez une photo et indiquez l'emplacement exact.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-primary bg-gradient text-white mb-3 p-3 rounded-circle mx-auto" style="width: 64px; height: 64px;">
+                        <i class="bi bi-clock-history fs-3"></i>
+                    </div>
+                    <h3 class="fs-4 fw-bold">2. Suivez</h3>
+                    <p class="text-muted">
+                        Restez informé de l'avancement de votre signalement en temps réel.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-primary bg-gradient text-white mb-3 p-3 rounded-circle mx-auto" style="width: 64px; height: 64px;">
+                        <i class="bi bi-check-circle fs-3"></i>
+                    </div>
+                    <h3 class="fs-4 fw-bold">3. Résolution</h3>
+                    <p class="text-muted">
+                        Les services compétents prennent en charge et résolvent le problème.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Types de Problèmes -->
+    <div class="row py-5">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-5 fw-bold">Types de Problèmes</h2>
+            <p class="lead text-muted">Voici les différents types de problèmes que vous pouvez signaler</p>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <i class="bi bi-trash text-danger fs-1 mb-3"></i>
+                    <h4>Déchets</h4>
+                    <p class="text-muted">Dépôts sauvages, poubelles non ramassées...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <i class="bi bi-cone-striped text-warning fs-1 mb-3"></i>
+                    <h4>Routes</h4>
+                    <p class="text-muted">Nids de poule, signalisation défectueuse...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <i class="bi bi-droplet text-info fs-1 mb-3"></i>
+                    <h4>Eau</h4>
+                    <p class="text-muted">Fuites, coupures d'eau, problèmes d'évacuation...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <i class="bi bi-lightning text-primary fs-1 mb-3"></i>
+                    <h4>Électricité</h4>
+                    <p class="text-muted">Pannes, éclairage public défectueux...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="row py-5">
+        <div class="col-12 text-center">
+            <div class="p-5 bg-light rounded-3">
+                <h2 class="display-5 fw-bold mb-4">Prêt à contribuer ?</h2>
+                <p class="lead mb-4">
+                    Rejoignez notre communauté et participez à l'amélioration de votre ville.
+                </p>
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'signup' %}" class="btn btn-primary btn-lg px-5">
+                        Commencer maintenant
+                    </a>
+                {% else %}
+                    <a href="{% url 'create_report' %}" class="btn btn-primary btn-lg px-5">
+                        Signaler un problème
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
