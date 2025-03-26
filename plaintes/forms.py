@@ -4,12 +4,6 @@ from django.core.exceptions import ValidationError
 from .models import Report, User, Comment
 
 class SignUpForm(UserCreationForm):
-    ROLES = (
-        ('citizen', 'Citoyen'),
-        ('admin', 'Administrateur'),
-    )
-    
-    role = forms.ChoiceField(choices=ROLES, required=True, widget=forms.Select(attrs={'class': 'form-control'}))
     phone_number = forms.CharField(max_length=15, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     email = forms.EmailField(
         max_length=254,
@@ -19,7 +13,7 @@ class SignUpForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'email', 'password1', 'password2', 'role', 'phone_number')
+        fields = ('username', 'email', 'password1', 'password2', 'phone_number')
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

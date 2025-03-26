@@ -101,34 +101,37 @@ def tableau_de_bord_citoyen(request):
 
     return render(request, 'plaintes/tableau_de_bord_citoyen.html', context)  # Affiche le tableau de bord citoyen
 
-
 @login_required
 def report_list(request):
-    # Vue pour lister les rapports
-    reports = Report.objects.all()  # Récupérer tous les rapports
+    reports = Report.objects.all()
     if request.user.role != 'admin':
-        reports = reports.filter(user=request.user)  # Filtrer les rapports pour l'utilisateur connecté si non admin
+        reports = reports.filter(user=request.user)
 
     # Filtrage
-    status = request.GET.get('status')  # Récupérer le paramètre de statut
-    problem_type = request.GET.get('type')  # Récupérer le paramètre de type de problème
-    search = request.GET.get('search')  # Récupérer le paramètre de recherche
-    sort = request.GET.get('sort', '-created_at')  # Récupérer le paramètre de tri (par défaut par date de création)
+    status = request.GET.get('status')
+    problem_type = request.GET.get('type')
+    search = request.GET.get('search')
+    sort = request.GET.get('sort', '-created_at')
 
     if status:
-        reports = reports.filter(status=status)  # Filtrer par statut
+        reports = reports.filter(status=status)
     if problem_type:
-        reports = reports.filter(problem_type=problem_type)  # Filtrer par type de problème
+        reports = reports.filter(problem_type=problem_type)
     if search:
-        reports = reports.filter(description__icontains=search)  # Filtrer par recherche dans la description
+        reports = reports.filter(description__icontains=search)
+
+    # Validation du paramètre de tri
+    valid_sort_fields = ['created_at', '-created_at', 'updated_at', '-updated_at', 'status', '-status']
+    if sort not in valid_sort_fields:
+        sort = '-created_at'  # Valeur par défaut si le tri est invalide
 
     # Tri
-    reports = reports.order_by(sort)  # Tri des rapports
+    reports = reports.order_by(sort)
 
     # Pagination
-    paginator = Paginator(reports, 12)  # Pagination avec 12 rapports par page
-    page = request.GET.get('page')  # Récupérer le numéro de page
-    reports = paginator.get_page(page)  # Récupérer la page des rapports
+    paginator = Paginator(reports, 12)
+    page = request.GET.get('page')
+    reports = paginator.get_page(page)
 
     context = {
         'reports': reports,
@@ -137,10 +140,7 @@ def report_list(request):
         'current_search': search,
         'current_sort': sort
     }
-    return render(request, 'plaintes/report_list.html', context)  # Affiche la liste des rapports
-
-
-@login_required
+    return render(request, 'plaintes/report_list.html', context)
 def create_report(request):
     # Vue pour créer un rapport
     if request.method == 'POST':

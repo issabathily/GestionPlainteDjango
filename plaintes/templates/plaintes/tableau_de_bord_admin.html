@@ -1,4 +1,4 @@
-{% extends 'plaintes/base.html' %}
+{% extends 'plaintes/pricipal.html' %}
 {% load static %}
 
 {% block title %}Tableau de Bord - Administration{% endblock %}
@@ -11,12 +11,12 @@
             <i class="bi bi-list"></i> Tous les rapports
         </a>
     </div>
-    
+
     <!-- Statistiques -->
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="p-3 bg-light rounded">
-                <div class="d-flex justify-content-between">
+            <div class="p-3 bg-light rounded shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-muted mb-1">Total Rapports</h6>
                         <h3 class="mb-0">{{ total_rapports }}</h3>
@@ -28,8 +28,8 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="p-3 bg-light rounded">
-                <div class="d-flex justify-content-between">
+            <div class="p-3 bg-light rounded shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-muted mb-1">Résolus</h6>
                         <h3 class="mb-0">{{ rapports_resolus }}</h3>
@@ -41,8 +41,8 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="p-3 bg-light rounded">
-                <div class="d-flex justify-content-between">
+            <div class="p-3 bg-light rounded shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-muted mb-1">En Attente</h6>
                         <h3 class="mb-0">{{ rapports_en_attente }}</h3>
@@ -54,8 +54,8 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="p-3 bg-light rounded">
-                <div class="d-flex justify-content-between">
+            <div class="p-3 bg-light rounded shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-muted mb-1">Utilisateurs</h6>
                         <h3 class="mb-0">{{ total_utilisateurs }}</h3>
@@ -64,6 +64,24 @@
                         <i class="bi bi-people fs-3"></i>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="row mb-4">
+        <!-- Graphique en anneau : Répartition des statuts -->
+        <div class="col-md-6">
+            <div class="bg-white p-4 rounded shadow-sm">
+                <h4 class="mb-4">Répartition des Statuts</h4>
+                <canvas id="statusChart" height="200"></canvas>
+            </div>
+        </div>
+        <!-- Graphique en barres : Évolution des rapports -->
+        <div class="col-md-6">
+            <div class="bg-white p-4 rounded shadow-sm">
+                <h4 class="mb-4">Évolution des Rapports (Derniers 6 Mois)</h4>
+                <canvas id="reportsChart" height="200"></canvas>
             </div>
         </div>
     </div>
@@ -114,10 +132,140 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Ajustements pour les graphiques */
+    canvas {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .bg-light {
+        background-color: #f8fafc !important;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .bg-light:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+    }
+
+    .btn-primary:hover {
+        background-color: #2563eb;
+        border-color: #2563eb;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.35em 0.65em;
+    }
+</style>
 {% endblock %}
 
 {% block extra_js %}
+<!-- Inclure Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
+// Données pour le graphique en anneau (Répartition des statuts)
+const statusData = {
+    labels: ['Résolus', 'En Attente', 'Reçus', 'Rejetés'],
+    datasets: [{
+        data: [
+            {{ rapports_resolus }},
+            {{ rapports_en_attente }},
+            {{ total_rapports }} - {{ rapports_resolus }} - {{ rapports_en_attente }} - {{ rapports_rejetes|default:0 }},
+            {{ rapports_rejetes|default:0 }}
+        ],
+        backgroundColor: [
+            'rgba(34, 197, 94, 0.7)',  // Vert pour Résolus
+            'rgba(234, 179, 8, 0.7)',  // Jaune pour En Attente
+            'rgba(59, 130, 246, 0.7)', // Bleu pour Reçus
+            'rgba(239, 68, 68, 0.7)'   // Rouge pour Rejetés
+        ],
+        borderColor: [
+            'rgba(34, 197, 94, 1)',
+            'rgba(234, 179, 8, 1)',
+            'rgba(59, 130, 246, 1)',
+            'rgba(239, 68, 68, 1)'
+        ],
+        borderWidth: 1
+    }]
+};
+
+// Configuration du graphique en anneau
+const statusChart = new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: statusData,
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    font: {
+                        size: 14
+                    }
+                }
+            },
+            tooltip: {
+                enabled: true
+            }
+        },
+        cutout: '60%' // Pour un effet "anneau"
+    }
+});
+
+// Données pour le graphique en barres (Évolution des rapports - Simulation)
+const reportsData = {
+    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+    datasets: [{
+        label: 'Nouveaux Rapports',
+        data: [12, 19, 3, 5, 2, 8], // Remplacez par vos données réelles
+        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+        borderColor: 'rgba(59, 130, 246, 1)',
+        borderWidth: 1
+    }]
+};
+
+// Configuration du graphique en barres
+const reportsChart = new Chart(document.getElementById('reportsChart'), {
+    type: 'bar',
+    data: reportsData,
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Nombre de Rapports'
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Mois'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                enabled: true
+            }
+        }
+    }
+});
+
+// Fonction pour mettre à jour le statut (inchangée)
 async function updateStatus(reportId, status) {
     if (!status) return;
     if (!confirm('Voulez-vous vraiment changer le statut de ce rapport ?')) {

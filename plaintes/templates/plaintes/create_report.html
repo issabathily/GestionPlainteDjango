@@ -1,76 +1,105 @@
-{% extends 'plaintes/base.html' %}
+{% extends 'plaintes/pricipal.html' %}
 {% load static %}
+
 {% block content %}
-<div  class="container mt-4 max-w-md mx-auto">
-    <div class="bg-gray-900 p-4 rounded-lg shadow-md">
-        <h2 class="text-xl font-semibold text-white mb-3 text-center">Nouvelle plainte</h2>
-        <form style="padding: 10px" method="post" enctype="multipart/form-data" class="space-y-3">
-            {% csrf_token %}
-            <div class="space-y-3">
-                {% for field in form %}
-                <div>
-                    <label for="{{ field.id_for_label }}" class="block text-xs font-medium text-gray-400 mb-1">
-                        {{ field.label }}
-                    </label>
-                    {{ field }}
-                    {% if field.errors %}
-                    <p class="text-red-400 text-xs mt-1">{{ field.errors|join:", " }}</p>
-                    {% endif %}
+<div class="container mt-4 max-w-4xl mx-auto flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+    <!-- Formulaire à gauche -->
+    <div class="w-full md:w-1/2 bg-white p-4 rounded-lg shadow-md flex flex-col justify-between">
+        <div>
+            <h2 class="text-xl font-semibold text-blue-800 mb-3 text-center">Nouvelle plainte</h2>
+            <form style="padding: 10px" method="post" enctype="multipart/form-data" class="space-y-3">
+                {% csrf_token %}
+                <div class="space-y-3">
+                    {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="block text-xs font-medium text-blue-600 mb-1">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-            <button type="submit" class="btn btn-primary w-full py-2 text-sm font-medium rounded-md hover:bg-blue-700 transition duration-150">
-                Envoyer
-            </button>
-        </form>
+                <button type="submit" class="btn btn-primary w-full py-2 text-sm font-medium rounded-md hover:bg-blue-600 transition duration-150 mt-3">
+                    Envoyer
+                </button>
+            </form>
+        </div>
+        <!-- Texte déplacé en bas -->
+        <p class="text-sm text-blue-700 text-center italic mt-auto">
+            "Décrivez votre plainte avec soin, votre message sera bientôt pris en charge par l’un de nos administrateurs."
+        </p>
     </div>
 
-    <style>
-        body {
-
-            font-family: 'Helvetica', sans-serif;
-            color: #e4e6eb;
-        }
-
-        .btn-primary {
-            background-color: #2374e1;
-            border-color: #2374e1;
-        }
-
-        .btn-primary:hover {
-            background-color: #1b5bbf;
-            border-color: #1b5bbf;
-        }
-
-        input[type="text"],
-        input[type="file"],
-        textarea {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #3a3b3c;
-            border-radius: 4px;
-            font-size: 14px;
-            background-color: #242526;
-            color: #e4e6eb;
-            transition: border-color 0.2s ease-in-out;
-        }
-
-        textarea {
-            max-height: 50px;
-            resize: vertical;
-        }
-
-        input[type="text"]:focus,
-        input[type="file"]:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #2374e1;
-            box-shadow: 0 0 0 2px rgba(35, 116, 225, 0.2);
-        }
-
-        .shadow-md {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-    </style>
+    <!-- Image à droite -->
+    <div class="w-full md:w-1/2 flex justify-center">
+        <img src="{% static 'plaintes/images/4062364-removebg-preview.png' %}" alt="Image de plainte" class="w-full max-w-md h-auto object-contain">
+    </div>
 </div>
+
+<style>
+    body {
+        font-family: 'Helvetica', sans-serif;
+        color: #1e3a8a;
+        background-color: #f0f7ff;
+    }
+
+    .btn-primary {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #2563eb;
+        border-color: #2563eb;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    textarea {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #bfdbfe;
+        border-radius: 4px;
+        font-size: 14px;
+        background-color: #ffffff;
+        color: #1e40af;
+        transition: border-color 0.2s ease-in-out;
+    }
+
+    textarea {
+        max-height: 50px;
+        resize: vertical;
+    }
+
+    input[type="text"]:focus,
+    input[type="file"]:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+
+    .shadow-md {
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Ajustements pour les petits écrans */
+    @media (max-width: 768px) {
+        img {
+            height: auto;
+            max-height: 50vh;
+        }
+    }
+
+    @media (min-width: 768px) {
+        img {
+            height: 70vh;
+            object-fit: contain;
+        }
+    }
+</style>
 {% endblock %}
