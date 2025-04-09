@@ -125,6 +125,7 @@ AUTHENTICATION_BACKENDS = [
 STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = BASE_DIR / 'plaintes/static/plaintes/images'
 # settings.py
 
 AUTH_USER_MODEL = 'plaintes.User'
